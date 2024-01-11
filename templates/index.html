@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="static/main.css">
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+
+    <title>Car Price Prediction</title>
+</head>
+<body class="bg-dark">
+    <div class="container">
+        <div class="row">
+            <div class="card mt-50" style="width:100%; height:100%">
+                <div class="card-header">
+                    <div class="col-12" style="text-align: center;">
+                        <h2>Find Best Price Here</h2>
+                    </div>  
+                </div>
+                <div class="card-body">
+                    <form method="post" action="#" accept-charset="utf-8">
+                        <div class="form-group row" style="text-align: center;">
+                            <label class="col-sm-3 mx-3"><b>Select Company: </b></label>
+                            <select class="col-5 selectpicker form control" id="company" name="company" required="1" onchange="load_car_models(this.id, 'car_model')">
+                                {% for company in companies %}
+                                    <option value="{{ company }}">{{company}}</option>
+                                {% endfor %}
+                            </select>    
+                        </div>
+                        <div class="form-group row" style="text-align: center;">
+                            <label class="col-sm-3 mx-3"><b>Select Model: </b></label>
+                            <select class="col-5 selectpicker form control" id="car_model" name="car_model" required="1">
+                                
+                            </select>    
+                        </div>
+                        <div class="form-group row" style="text-align: center;">
+                            <label class="col-sm-3 mx-3"><b>Select Year: </b></label>
+                            <input class="col-5 form control" type="text" id="year" name="year" placeholder="Enter Year of Purchase">    
+                        </div>
+                        <div class="form-group row" style="text-align: center;">
+                            <label class="col-sm-3 mx-3"><b>Select Fuel Type: </b></label>
+                            <select class="col-3 selectpicker form control" id="fuel_type" name="fuel_type" required="1">
+                                {% for fuel_type in fuel_type %}
+                                    <option value="{{ fuel_type }}">{{fuel_type}}</option>
+                                {% endfor %}
+                            </select>    
+                        </div>
+                        <div class="form-group row" style="text-align: center;">
+                            <label class="col-sm-3 mx-3"><b>Enter Number of Kilometers travelled: </b></label>
+                            <input class="col-5 form-control" type="text" id="kilo-driven" name="kilo-driven" placeholder="Enter Number of Kilometers travelled">   
+                        </div>
+                        <div class="form-group" style="text-align: center;">
+                            <button class "col-3 btn btn-primary form-control" onclick="send_data()">Predict</button>
+                        </div>
+                        
+                    </form>
+                    <br>
+                    <div class="row">
+                        <div class="col-12" style="text-align: center;">
+                            <h3><span id="prediction"></span></h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function load_car_models(company_id,car_model_id)
+    {
+        var company = document.getElementById(company_id);
+        var car_model = document.getElementById(car_model_id);
+        car_model.value="";
+        car_model.innerHTML="";
+        
+        {% for company in companies %}
+        
+            if(company.value == "{{company}}")
+            {
+                {% for model in car_models %}
+                    
+                    {% if company in model %}
+                    
+                        var newOption = document.createElement("option");
+                        newOption.value = "{{ model }}";
+                        newOption.innerHTML = "{{ model }}";
+                        car_model.options.add(newOption);
+                        
+                    {% endif %}
+                
+                {% endfor %}
+            }
+                
+        {% endfor %}
+    }
+    function form_handler(event)
+    {
+        event.preventDefault();
+    }
+    function send_data()
+    {
+        document.querySelector('form').addEventListener('submit', form_handler)
+        //Send & Receive data to predict
+        var fd = new FormData(document.querySelector('form'));
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST','/predict',true)
+        document.getElementById("prediction").innerHTML="Wait! Predicting Price...";
+        xhr.onreadystatechange= function()
+        {
+            if(xhr.readyState == XMLHttpRequest.DONE)
+            {
+                document.getElementById("prediction").innerHTML="You can sell your car at Rs."+xhr.responseText;
+            }
+        }
+        xhr.onload=function(){};
+        xhr.send(fd);
+    }
+    </script>
+        <section class="footer">
+            <ul class="list">
+                <li>
+                    <a href="#">About</a>
+                </li>
+                <li>
+                    <a href="#">Contact Us</a>
+                </li>
+            </ul>
+            <p class="copyright">
+                TY, T-3(Group 3) @ 2021-2022
+            </p>
+        </section>
+        
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous"></script>
+
+        
+</body>
+</html>
